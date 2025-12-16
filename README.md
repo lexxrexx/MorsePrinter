@@ -1,5 +1,3 @@
- Morse‑to‑Receipt Printer – README body {font-family:Arial,Helvetica,sans-serif; max-width:900px; margin:2rem auto; line-height:1.6; color:#333; background:#fafafa; padding:0 1rem;} h1, h2, h3 {color:#2c3e50;} pre {background:#f4f4f4; border:1px solid #ddd; padding:1rem; overflow:auto;} code {font-family:"Courier New",Courier,monospace;} ul, ol {margin-left:1.5rem;} hr {border:none; border-top:1px solid #ddd; margin:2rem 0;}
-
 # 📜 Morse‑to‑Receipt Printer
 
 **Real‑time decoding of CW (Morse code) from an SDR and printing the conversation on a thermal receipt printer.**

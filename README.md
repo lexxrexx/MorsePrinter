@@ -23,7 +23,7 @@
 This project listens to a ham‑radio frequency with an **RTL‑SDR**, demodulates the signal, decodes Morse code, and prints the resulting conversation on a **thermal receipt printer** (ESC/POS compatible).
 
 -   A 15‑second rolling buffer is always kept.
--   When a line containing the configured call‑sign is heard, the script *does not print it immediately*. It waits for a **response** – any line that does **not** contain the same call‑sign.
+-   When a line containing the configured call‑sign is heard, the script *does not print it immediately*. It waits for a **response** 
 -   Upon the first response:
     1.  The rolling buffer (minus any lines that still contain the call‑sign) is flushed to the printer (lead‑in).
     2.  The response line is printed.

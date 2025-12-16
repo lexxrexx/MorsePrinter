@@ -2,50 +2,34 @@
 # ------------------------------------------------------------
 # One‑click installer for the Morse‑to‑Receipt Printer project
 # ------------------------------------------------------------
-# 1️⃣ Download the latest source from GitHub
-# 2️⃣ Install all required system packages (apt)
-# 3️⃣ Install required Python packages (pip)
-# 4️⃣ Set up the project directory and make the script executable
-# ------------------------------------------------------------
 
-# Exit immediately on any error and treat unset variables as errors
+
 set -euo pipefail
 
-# ------------------------------------------------------------
-# Helper functions
-# ------------------------------------------------------------
+# ---------- Helper functions ----------
 log()   { echo -e "\e[32m[INFO]\e[0m $*"; }
 error() { echo -e "\e[31m[ERROR]\e[0m $*" >&2; exit 1; }
 
-# Trap any command that exits non‑zero and report it
-trap 'error "An unexpected error occurred at line $LINENO. Installation halted."' ERR
-
-# ------------------------------------------------------------
-# Variables (now pointing at your actual repo)
-# ------------------------------------------------------------
+# ---------- Variables ----------
 REPO_URL="https://github.com/lexxrexx/MorsePrinter"
 ZIP_URL="${REPO_URL}/archive/refs/heads/main.zip"
 PROJECT_DIR="${HOME}/morse-printer"
 TMP_ZIP="/tmp/morse-printer.zip"
 
-# ------------------------------------------------------------
-# Download the repository
-# ------------------------------------------------------------
+# ---------- 1️⃣ Download the repository ----------
 log "Downloading latest source archive..."
-curl -L -sSf "${ZIP_URL}" -o "${TMP_ZIP}" || error "Failed to download archive from ${ZIP_URL}."
+curl -L -sSf "${ZIP_URL}" -o "${TMP_ZIP}" || error "Failed to download archive."
 
 log "Extracting archive..."
-unzip -q -o "${TMP_ZIP}" -d "${HOME}" || error "Failed to unzip the downloaded archive."
+unzip -q -o "${TMP_ZIP}" -d "${HOME}" || error "Failed to unzip archive."
 rm -f "${TMP_ZIP}"
 
-# The zip extracts to a folder named <repo>-main; rename it to a stable name
+# The zip extracts to a folder named MorsePrinter‑main; rename it
 EXTRACTED_DIR=$(find "${HOME}" -maxdepth 1 -type d -name "MorsePrinter-*" | head -n1)
 [[ -n "${EXTRACTED_DIR}" ]] || error "Could not locate extracted directory."
-mv -f "${EXTRACTED_DIR}" "${PROJECT_DIR}" || error "Failed to move project to ${PROJECT_DIR}."
+mv -f "${EXTRACTED_DIR}" "${PROJECT_DIR}" || error "Failed to move project."
 
-# ------------------------------------------------------------
-# Install system dependencies
-# ------------------------------------------------------------
+# ---------- 2️⃣ Install system packages ----------
 log "Updating package index..."
 sudo apt-get update -y || error "apt-get update failed."
 
@@ -58,29 +42,20 @@ sudo apt-get install -y \
     python3-pip \
     unzip \
     wget \
-    > /dev/null || error "Failed to install required apt packages."
+    > /dev/null || error "Failed to install apt packages."
 
-# ------------------------------------------------------------
-# Install Python dependencies
-# ------------------------------------------------------------
-log "Upgrading pip..."
-python3 -m pip install --upgrade pip > /dev/null || error "Failed to upgrade pip."
-
-log "Installing required Python packages..."
+# ---------- 3️⃣ Install Python packages ----------
+log "Installing required Python packages (system‑wide)..."
+# NOTE: We deliberately **do not** run `pip install --upgrade pip` here.
 python3 -m pip install --quiet \
     python-escpos \
     pyyaml \
-    > /dev/null || error "Failed to install required Python packages."
+    > /dev/null || error "Failed to install Python packages."
 
-# ------------------------------------------------------------
-# Make the script executable
-# ------------------------------------------------------------
-log "Setting execute permission on the main script..."
-chmod +x "${PROJECT_DIR}/morse_printer.py" || error "Failed to chmod the script."
+# ---------- 4️⃣ Final touches ----------
+log "Making the main script executable..."
+chmod +x "${PROJECT_DIR}/morse_printer.py" || error "chmod failed."
 
-# ------------------------------------------------------------
-# Create a default config file (if missing)
-# ------------------------------------------------------------
 CONFIG_FILE="${PROJECT_DIR}/config.yaml"
 if [[ ! -f "${CONFIG_FILE}" ]]; then
     cat > "${CONFIG_FILE}" <<EOF
@@ -92,10 +67,7 @@ else
     log "Config file already exists at ${CONFIG_FILE}"
 fi
 
-# ------------------------------------------------------------
-# Completion message
-# ------------------------------------------------------------
 log "Installation complete! 🎉"
-log "To start the program, run:"
+log "To start the program:"
 echo -e "\n    cd \"${PROJECT_DIR}\"\n    ./morse_printer.py\n"
 log "Edit ${CONFIG_FILE} if you need to change the call‑sign or disable the filter."

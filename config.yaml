@@ -1,10 +1,15 @@
-# -------------------------------------------------
-# Morse‑to‑Receipt Printer configuration
-# -------------------------------------------------
-# Set `filter_enabled` to true if you want the printer to
-# output only messages that contain a specific FCC call sign.
-filter_enabled: false          # true → filter active, false → print everything
+# ------------------------------------------------------------
+# User‑adjustable settings for the Morse‑to‑Receipt Printer
+# ------------------------------------------------------------
+filter_enabled: true          # true → conversation mode, false → print every line
+call_sign: "WZ1EEE"          # your call sign goes here
 
-# The exact call‑sign to look for (case‑insensitive).  
-# Leave empty if you only want to enable/disable the filter.
-call_sign: "K1ABC"
+# Radio settings
+frequency_hz: 14070000        # 14.070 MHz → expressed in Hertz
+gain: 40                     # RTL‑SDR gain (0‑49)
+
+# Printer hardware IDs (run `lsusb` to get yours)
+printer_vendor_id: 0x04b8     # e.g., Epson vendor ID
+printer_product_id: 0x0202    # e.g., TM‑T20II product ID
+printer_interface: 0          # usually 0
+# ------------------------------------------------------------

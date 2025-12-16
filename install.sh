@@ -24,13 +24,34 @@ log "Extracting archive..."
 unzip -q -o "${TMP_ZIP}" -d "${HOME}" || error "Failed to unzip archive."
 rm -f "${TMP_ZIP}"
 
-# The zip extracts to a folder named MorsePrinter‑main; rename it
+# The zip extracts to a folder named MorsePrinter‑main; capture that name
 EXTRACTED_DIR=$(find "${HOME}" -maxdepth 1 -type d -name "MorsePrinter-*" | head -n1)
 [[ -n "${EXTRACTED_DIR}" ]] || error "Could not locate extracted directory."
-mv -f "${EXTRACTED_DIR}" "${PROJECT_DIR}" || error "Failed to move project."
+
+# ---------- Merge or move the project into place ----------
+if [[ -d "${PROJECT_DIR}" ]]; then
+    log "Existing project directory found at ${PROJECT_DIR}. Merging new files..."
+
+    # Preserve the user's existing config.yaml (if any)
+    if [[ -f "${PROJECT_DIR}/config.yaml" ]]; then
+        cp -p "${PROJECT_DIR}/config.yaml" "${PROJECT_DIR}/config.yaml.bak"
+        log "Backed up existing config.yaml to config.yaml.bak"
+    fi
+
+    # rsync copies everything from the freshly‑extracted folder into the
+    # existing project directory, overwriting older files but leaving
+    # anything not present in the new release untouched.
+    rsync -a --delete --exclude='config.yaml' "${EXTRACTED_DIR}/" "${PROJECT_DIR}/" \
+        || error "Failed to merge project files."
+
+    # Clean up the temporary extracted folder
+    rm -rf "${EXTRACTED_DIR}"
+else
+    log "No existing project directory – moving new project into place."
+    mv -f "${EXTRACTED_DIR}" "${PROJECT_DIR}" || error "Failed to move project."
+fi
 
 # ---------- Install missing APT packages ----------
-# List of required apt packages
 APT_PKGS=(
     rtl-sdr
     sox
@@ -63,7 +84,6 @@ else
 fi
 
 # ---------- Install missing Python packages ----------
-# List of required pip packages (names as they appear on PyPI)
 PY_PKG_NAMES=(
     python-escpos
     pyyaml
@@ -81,7 +101,6 @@ done
 
 if (( ${#missing_py[@]} )); then
     log "Installing missing Python packages: ${missing_py[*]}"
-    # Use --break-system-packages only when we really need to install system‑wide
     python3 -m pip install --quiet --break-system-packages "${missing_py[@]}" \
         > /dev/null || error "Failed to install missing Python packages."
 else

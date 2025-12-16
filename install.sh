@@ -21,9 +21,9 @@ error() { echo -e "\e[31m[ERROR]\e[0m $*" >&2; exit 1; }
 trap 'error "An unexpected error occurred at line $LINENO. Installation halted."' ERR
 
 # ------------------------------------------------------------
-# Variables (adjust REPO_URL to point at your actual repo)
+# Variables (now pointing at your actual repo)
 # ------------------------------------------------------------
-REPO_URL="https://github.com/your-username/morse-printer"
+REPO_URL="https://github.com/lexxrexx/MorsePrinter"
 ZIP_URL="${REPO_URL}/archive/refs/heads/main.zip"
 PROJECT_DIR="${HOME}/morse-printer"
 TMP_ZIP="/tmp/morse-printer.zip"
@@ -39,7 +39,7 @@ unzip -q -o "${TMP_ZIP}" -d "${HOME}" || error "Failed to unzip the downloaded a
 rm -f "${TMP_ZIP}"
 
 # The zip extracts to a folder named <repo>-main; rename it to a stable name
-EXTRACTED_DIR=$(find "${HOME}" -maxdepth 1 -type d -name "morse-printer-*" | head -n1)
+EXTRACTED_DIR=$(find "${HOME}" -maxdepth 1 -type d -name "MorsePrinter-*" | head -n1)
 [[ -n "${EXTRACTED_DIR}" ]] || error "Could not locate extracted directory."
 mv -f "${EXTRACTED_DIR}" "${PROJECT_DIR}" || error "Failed to move project to ${PROJECT_DIR}."
 
@@ -84,8 +84,8 @@ chmod +x "${PROJECT_DIR}/morse_printer.py" || error "Failed to chmod the script.
 CONFIG_FILE="${PROJECT_DIR}/config.yaml"
 if [[ ! -f "${CONFIG_FILE}" ]]; then
     cat > "${CONFIG_FILE}" <<EOF
-filter_enabled: false          # true → conversation mode, false → print every line
-call_sign: "K1ABC"           # the call‑sign that must be responded to. Remove "..."
+filter_enabled: true          # true → conversation mode, false → print every line
+call_sign: "K1ABC"           # the call‑sign that must be responded to
 EOF
     log "Created default config file at ${CONFIG_FILE}"
 else

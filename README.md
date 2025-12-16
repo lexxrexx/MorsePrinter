@@ -77,32 +77,31 @@ The script will:
 
 ### Manual install (step‑by‑step)
 
-```
 # 1 Update the system
-sudo apt-get update && sudo apt-get upgrade -y
+```sudo apt-get update && sudo apt-get upgrade -y```
 
 # 2 Install required system packages
-sudo apt-get install -y rtl-sdr sox multimon-ng python3 python3-pip unzip wget
+```sudo apt-get install -y rtl-sdr sox multimon-ng python3 python3-pip unzip wget```
 
 #  3 Install required Python packages
-pip3 install --upgrade pip
-pip3 install python-escpos pyyaml
+```pip3 install --upgrade pip
+pip3 install python-escpos pyyaml```
 
 # 4 Clone the repository (or download the zip)
-git clone https://github.com/lexxrexx/MorsePrinter.git
-cd MorsePrinter
+```git clone https://github.com/lexxrexx/MorsePrinter.git
+cd MorsePrinter```
 
 # 5 Make the main script executable
-chmod +x morse_printer.py
+```chmod +x morse_printer.py```
 
 # 6 (Optional) Create a default config file if you don’t have one yet
-nano config.yaml
+```nano config.yaml
 filter_enabled: true          # true → conversation mode, false → print every line
 call_sign: "K1ABC"           # the call‑sign that must be responded to
 ```
 
 
-##How It Works
+## How It Works
 
 Rolling buffer: Stores every decoded line with a timestamp for the last 15 seconds.
 Call‑sign detection: When a line contains the configured call‑sign, the script sets awaiting_response = True and does not print.
@@ -119,7 +118,8 @@ Filter disabled: If filter_enabled: false, the script skips all of the above log
 
 
 
-##Running the Program
+## Running the Program
+
 cd ~/MorsePrinter   # or wherever you placed the files
 ./morse_printer.py
 
@@ -134,7 +134,7 @@ The printer will receive the lead‑in (the 15 seconds before the response), t
 
 
 
-##Troubleshooting
+## Troubleshooting
 
 No output on the printerIncorrect USB IDs or missing permissions - Run lsusb to get the correct IDs, update the script, and ensure your user is in the lp group or run with sudo.
 Script never detects a response - The call‑sign in config.yaml does not exactly match the transmitted call‑sign.Double‑check spelling and remove surrounding whitespace.
@@ -145,7 +145,7 @@ High CPU usageVery high sample rate or noisy signal. Lower the gain or sample ra
 
 
 
-##License & Credits
+## License & Credits
 
 License: MIT – feel free to modify, redistribute, or incorporate into larger projects.
 Core libraries:

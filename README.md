@@ -1,5 +1,3 @@
- Morse‑to‑Receipt Printer – README body 
-
 # 📜 Morse‑to‑Receipt Printer
 
 **Real‑time decoding of CW (Morse code) from an SDR and printing the conversation on a thermal receipt printer.**

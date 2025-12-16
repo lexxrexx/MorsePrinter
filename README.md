@@ -105,7 +105,7 @@ The script will:
 
 Rolling buffer: Stores every decoded line with a timestamp for the last 15 seconds.
 Call‑sign detection: When a line contains the configured call‑sign, the script sets awaiting_response = True and does not print.
-Response detection: The next line that does not contain the call‑sign is treated as the response. At that moment:
+Response detection: When a typical QSO response is received - At that moment:
     
         The rolling buffer (minus any lines still containing the call‑sign) is flushed to the printer (lead‑in).
         The response line is printed.

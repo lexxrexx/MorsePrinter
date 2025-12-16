@@ -1,0 +1,10 @@
+# -------------------------------------------------
+# Morse‑to‑Receipt Printer configuration
+# -------------------------------------------------
+# Set `filter_enabled` to true if you want the printer to
+# output only messages that contain a specific FCC call sign.
+filter_enabled: false          # true → filter active, false → print everything
+
+# The exact call‑sign to look for (case‑insensitive).  
+# Leave empty if you only want to enable/disable the filter.
+call_sign: "K1ABC"

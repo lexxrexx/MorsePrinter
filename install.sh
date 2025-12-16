@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
+
 # ------------------------------------------------------------
 # One‑click installer for the Morse‑to‑Receipt Printer project
 # ------------------------------------------------------------
-
 
 set -euo pipefail
 
@@ -16,7 +16,7 @@ ZIP_URL="${REPO_URL}/archive/refs/heads/main.zip"
 PROJECT_DIR="${HOME}/morse-printer"
 TMP_ZIP="/tmp/morse-printer.zip"
 
-# ---------- 1️⃣ Download the repository ----------
+# ---------- Download the repository ----------
 log "Downloading latest source archive..."
 curl -L -sSf "${ZIP_URL}" -o "${TMP_ZIP}" || error "Failed to download archive."
 
@@ -29,30 +29,66 @@ EXTRACTED_DIR=$(find "${HOME}" -maxdepth 1 -type d -name "MorsePrinter-*" | head
 [[ -n "${EXTRACTED_DIR}" ]] || error "Could not locate extracted directory."
 mv -f "${EXTRACTED_DIR}" "${PROJECT_DIR}" || error "Failed to move project."
 
-# ---------- 2️⃣ Install system packages ----------
-log "Updating package index..."
-sudo apt-get update -y || error "apt-get update failed."
+# ---------- Install missing APT packages ----------
+# List of required apt packages
+APT_PKGS=(
+    rtl-sdr
+    sox
+    multimon-ng
+    python3
+    python3-pip
+    unzip
+    wget
+)
 
-log "Installing required apt packages..."
-sudo apt-get install -y \
-    rtl-sdr \
-    sox \
-    multimon-ng \
-    python3 \
-    python3-pip \
-    unzip \
-    wget \
-    > /dev/null || error "Failed to install apt packages."
+missing_apt=()
+log "Checking for required apt packages..."
+for pkg in "${APT_PKGS[@]}"; do
+    if dpkg -s "$pkg" >/dev/null 2>&1; then
+        log "  $pkg already installed"
+    else
+        missing_apt+=("$pkg")
+    fi
+done
 
-# ---------- 3️⃣ Install Python packages ----------
-log "Installing required Python packages (system‑wide)..."
-# NOTE: We deliberately **do not** run `pip install --upgrade pip` here.
-python3 -m pip install --quiet \
-    python-escpos \
-    pyyaml \
-    > /dev/null || error "Failed to install Python packages."
+if (( ${#missing_apt[@]} )); then
+    log "Updating package index..."
+    sudo apt-get update -y || error "apt-get update failed."
 
-# ---------- 4️⃣ Final touches ----------
+    log "Installing missing apt packages: ${missing_apt[*]}"
+    sudo apt-get install -y "${missing_apt[@]}" > /dev/null \
+        || error "Failed to install missing apt packages."
+else
+    log "All required apt packages are already present."
+fi
+
+# ---------- Install missing Python packages ----------
+# List of required pip packages (names as they appear on PyPI)
+PY_PKG_NAMES=(
+    python-escpos
+    pyyaml
+)
+
+missing_py=()
+log "Checking for required Python packages..."
+for py_pkg in "${PY_PKG_NAMES[@]}"; do
+    if python3 -m pip show "$py_pkg" >/dev/null 2>&1; then
+        log "  $py_pkg already installed"
+    else
+        missing_py+=("$py_pkg")
+    fi
+done
+
+if (( ${#missing_py[@]} )); then
+    log "Installing missing Python packages: ${missing_py[*]}"
+    # Use --break-system-packages only when we really need to install system‑wide
+    python3 -m pip install --quiet --break-system-packages "${missing_py[@]}" \
+        > /dev/null || error "Failed to install missing Python packages."
+else
+    log "All required Python packages are already present."
+fi
+
+# ---------- Final touches ----------
 log "Making the main script executable..."
 chmod +x "${PROJECT_DIR}/morse_printer.py" || error "chmod failed."
 

@@ -78,26 +78,26 @@ The script will:
 ### Manual install (step‑by‑step)
 
 # 1 Update the system
-```sudo apt-get update && sudo apt-get upgrade -y```
+```     sudo apt-get update && sudo apt-get upgrade -y
 
 # 2 Install required system packages
-```sudo apt-get install -y rtl-sdr sox multimon-ng python3 python3-pip unzip wget```
+        sudo apt-get install -y rtl-sdr sox multimon-ng python3 python3-pip unzip wget
 
 #  3 Install required Python packages
-```pip3 install --upgrade pip
-pip3 install python-escpos pyyaml```
+        pip3 install --upgrade pip
+        pip3 install python-escpos pyyaml
 
 # 4 Clone the repository (or download the zip)
-```git clone https://github.com/lexxrexx/MorsePrinter.git
-cd MorsePrinter```
+        git clone https://github.com/lexxrexx/MorsePrinter.git
+        cd MorsePrinter
 
 # 5 Make the main script executable
-```chmod +x morse_printer.py```
+        chmod +x morse_printer.py
 
 # 6 (Optional) Create a default config file if you don’t have one yet
-```nano config.yaml
-filter_enabled: true          # true → conversation mode, false → print every line
-call_sign: "K1ABC"           # the call‑sign that must be responded to
+        nano config.yaml
+        filter_enabled: true          # true → conversation mode, false → print every line
+        call_sign: "K1ABC"           # the call‑sign that must be responded to
 ```
 
 
